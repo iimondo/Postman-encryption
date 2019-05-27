@@ -29,6 +29,11 @@ start({
     pubKeyName: 'RSA_Public_Key'
 });
 ```
+如下图：
+<div align=center>
+<img src="images/pre-request-script.png" />
+</div>
+
 ## 在Collections的Tests中添加
 ```
 if(!pm.environment.has("autoClear")){
