@@ -1,3 +1,5 @@
+> 没有开放AES和RSA模式的接口, 如果你有需要可以联系, QQ:1428728432
+
 # Postman-encryption
 Postman加密Pre-request Script
 
@@ -51,6 +53,7 @@ if(body.code === 200){
     '-----BEGIN PUBLIC KEY-----\n' + body.data.pub_key + '-----END PUBLIC KEY-----');
 }
 ```
+- 加密使用的是[forge Project](https://github.com/digitalbazaar/forge)
 
 # 例子
 - 用md5, 加密GET请求query参数
