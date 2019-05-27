@@ -22,8 +22,8 @@ eval(pm.environment.get("autoEncryption"));
 
 // 初始化配置
 start({
-    key: 'Y5MUIOM7BUWI7BQR',
-    iv: 'S41AXIPFRFVJL73Z',
+    key: '123456789',
+    iv: '123456789',
     pubKeyName: 'RSA_Public_Key'
 });
 ```
@@ -41,5 +41,24 @@ eval(pm.environment.get("autoClear"));
 Tests中的脚本是用来清除动态生成的环境变量，如果你想保留，可以不添加此脚本
 
 # 注意事项
-- RSA公钥添加时必须首尾加上特殊字符，如下
-'-----BEGIN PUBLIC KEY-----\n' + pub_key + '-----END PUBLIC KEY-----'
+- RSA公钥添加时必须首尾加上特殊字符，如下:<br>'-----BEGIN PUBLIC KEY-----\n' + pub_key + '-----END PUBLIC KEY-----'
+- 一般用户在登录后返回rsa的公钥，我们可以在登录接口的tests添加如下脚本：
+```
+const body = JSON.parse(responseBody);
+if(body.code === 200){
+    // 设置公钥
+    pm.environment.set("RSA_Public_Key", 
+    '-----BEGIN PUBLIC KEY-----\n' + body.data.pub_key + '-----END PUBLIC KEY-----');
+}
+```
+
+# 例子
+- 用md5, 加密GET请求query参数
+<div align=center>
+<img src="images/md5.png" />
+</div>
+
+- 用AES，加密Post请求中的Body, {{aes$mobile}}中的mobile是已有环境变量
+<div align=center>
+<img src="images/aes.png" />
+</div>
