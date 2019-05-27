@@ -100,10 +100,10 @@ let requestParams = Object.assign(
 
 // 开始
 function start(configs) {
-  configs = Object.assign({ splitter: "$", pubKeyName: "pubKey" }, configs);
-  if (!pm.environment.has("configs")) {
-    pm.environment.set("configs", JSON.stringify(configs));
-  }
+  configs = Object.assign({ splitter: "$", pubKeyName: "pubKey"}, configs);
+//   if (!pm.environment.has(configs.configsName)) {
+//     pm.environment.set(configs.configsName, JSON.stringify(configs));
+//   }
 
   let localStore = {};
   if (pm.environment.has("localStore")) {
