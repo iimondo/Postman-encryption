@@ -43,8 +43,8 @@ eval(pm.environment.get("autoClear"));
 Tests中的脚本是用来清除动态生成的环境变量，如果你想保留，可以不添加此脚本
 
 # 注意事项
-- RSA公钥添加时必须首尾加上特殊字符，如下:<br>'-----BEGIN PUBLIC KEY-----\n' + pub_key + '-----END PUBLIC KEY-----'
-- 一般用户在登录后返回rsa的公钥，我们可以在登录接口的tests添加如下脚本：
+- RSA公钥添加时必须首尾加上特殊字符，如下:<br>'-----BEGIN PUBLIC KEY-----\n' + pub_key + '-----END PUBLIC KEY-----'<br>
+一般用户在登录后返回rsa的公钥，我们可以在登录接口的tests添加如下脚本：
 ```
 const body = JSON.parse(responseBody);
 if(body.code === 200){
@@ -53,6 +53,7 @@ if(body.code === 200){
     '-----BEGIN PUBLIC KEY-----\n' + body.data.pub_key + '-----END PUBLIC KEY-----');
 }
 ```
+当然如果你的公钥是存放在本地，则可以直接写死在环境变量中
 - 加密使用的是[forge Project](https://github.com/digitalbazaar/forge)
 
 # 例子
