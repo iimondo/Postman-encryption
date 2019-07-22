@@ -16,7 +16,7 @@
         // 在 '{{data}}' 符号中找到内容
         findValidData(rawData) {
             let validData = "";
-            let options = data.match(/\{\{(.+?)\}\}/g);
+            let options = rawData.match(/\{\{(.+?)\}\}/g);
             if (options && options.length > 0) {
                 let option = options[0];
                 if (option) {
@@ -68,20 +68,29 @@
         }
 
         getEncryptedContent(raw) {
-            let raw = raw.split(`${this.name + this.splitter}`)[1];
-            let encryptedContent = env.pm.environment.get(raw);
-            encryptedContent = encryptedContent ? encryptedContent : raw;
+            let content = raw.split(this.name + this.splitter)[1];
+            let encryptedContent = env.pm.environment.get(content);
+            encryptedContent = encryptedContent ? encryptedContent : content;
             return encryptedContent;
         }
 
         encrypt(raw) {
-            let encryptValue = this.getEncryptedContent(raw);
-            this.localStore[content] = this.overrder(encryptValue);
-            pm.environment.set("localStore", JSON.stringify(this.localStore));
+            if (raw.indexOf(this.name + this.splitter) !== -1) {
+                let encryptValue = this.getEncryptedContent(raw);
+                this.save(raw, this.overrder(encryptValue));
+            }
+        }
+
+        save(name, value) {
+
         }
 
         overrder(raw) {
             // 子类重写此方法，实现具体加密
+        }
+
+        toString() {
+            return this.name;
         }
     }
 
@@ -115,12 +124,12 @@
             super('aes', splitter);
             this.iv = iv;
             this.key = key;
-
-            if (!this.key) { throw new Error("没有在初始化配置中找到AES Key"); }
-            if (!this.iv) { throw new Error("没有在初始化配置中找到AES iv"); }
         }
 
         overrder(data) {
+            if (!this.key) { throw new Error("没有在初始化配置中找到AES Key"); }
+            if (!this.iv) { throw new Error("没有在初始化配置中找到AES iv"); }
+
             return CryptoJS.AES.encrypt(data, this.key, {
                 iv: this.iv,
                 mode: CryptoJS.mode.CBC,
@@ -130,19 +139,37 @@
     }
 
 
+    /**
+     * RSA加密
+     */
+    class RSA extends AbsEncrypt {
+        constructor(splitter, privateKey){
+            super('rsa', splitter);
+        }
+
+        overrder(data){
+
+        }
+    }
+
+
     // 初始化
     function register(configs = {
         log: false,         // 日志开关
-        splitter: "$",      // 加密分割符，分割加密方式和加密内容
+        splitter: "@",      // 加密分割符，分割加密方式和加密内容
         key: '',            // AES 密钥
         iv: '',             // AES 偏移量
         privateKey: ''      // RSA 私钥
-    }, encryptMethods) {
+    }, encryptMethods = []) {
         const util = new _Util(env, configs.log);
         const requestParameters = util.findRequestParameter();
 
         // 支持的加密方式
-        let supportMethods = [new AES(configs.splitter, configs.key, configs.iv), new MD5(configs.splitter)];
+        let supportMethods = encryptMethods.concat([
+            new MD5(configs.splitter),
+            new AES(configs.splitter, configs.key, configs.iv),
+            new RSA(configs.splitter, configs.privateKey)
+        ]);
 
         // 遍历所有请求参数，执行加密
         Object.keys(requestParameters).map(key => {
@@ -161,5 +188,4 @@
 })(this);
 
 
-
-this.register({ log: true });
+this.register({ log: true, splitter: "@" });
