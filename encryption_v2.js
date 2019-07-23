@@ -84,14 +84,14 @@
             return encryptedContent;
         }
 
-        encrypt(raw) {
+        _encrypt(raw) {
             if (raw.indexOf(this.name + this.splitter) !== -1) {
                 let encryptValue = this.getEncryptedContent(raw);
-                this.save(this.overrder(encryptValue, raw).toLocaleUpperCase(), raw);
+                this.save(raw, this.overrder(encryptValue, raw).toLocaleUpperCase());
             }
         }
 
-        save(name, value) {
+        _save(name, value) {
             // 当前记录
             this.environment.set(name, value);
 
@@ -102,11 +102,12 @@
         }
 
         /**
-         * @param data  加密后
-         * @param raw   加密前
+         * @param data  处理后
+         * @param raw   处理前
          */
         overrder(data, raw) {
             // 子类重写此方法，实现具体加密
+            return '';
         }
 
         toString() {
