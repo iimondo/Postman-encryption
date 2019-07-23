@@ -87,7 +87,7 @@
         encrypt(raw) {
             if (raw.indexOf(this.name + this.splitter) !== -1) {
                 let encryptValue = this.getEncryptedContent(raw);
-                this.save(raw, this.overrder(encryptValue).toLocaleUpperCase());
+                this.save(this.overrder(encryptValue, raw).toLocaleUpperCase(), raw);
             }
         }
 
@@ -101,7 +101,11 @@
             this.environment.set("EncryptionHistory", this.JSON.stringify(this.localStore));
         }
 
-        overrder(raw) {
+        /**
+         * @param data  加密后
+         * @param raw   加密前
+         */
+        overrder(data, raw) {
             // 子类重写此方法，实现具体加密
         }
 
