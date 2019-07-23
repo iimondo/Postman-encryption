@@ -63,7 +63,7 @@
 
         constructor(name, splitter) {
             this.name = name;
-            // this.localStore = {};
+            this.localStore = {};
             this.splitter = splitter;
 
             // pm 参数
@@ -71,10 +71,10 @@
             this.CryptoJS = env.CryptoJS;
             this.environment = env.pm.environment;
 
-            // 内容存储至本地
-            // if (this.environment.has("EncryptionHistory")) {
-            //     this.localStore = this.JSON.parse(this.environment.get("EncryptionHistory"));
-            // }
+            // 记录动态生成的环境变量
+            if (this.environment.has("EncryptionHistory")) {
+                this.localStore = this.JSON.parse(this.environment.get("EncryptionHistory"));
+            }
         }
 
         getEncryptedContent(raw) {
@@ -95,10 +95,10 @@
             // 当前记录
             this.environment.set(name, value);
 
-            // 所有记录
-            // this.localStore[name] = value;
-            // env.console.log(this.JSON.stringify(this.localStore))
-            // this.environment.set("EncryptionHistory", this.JSON.stringify(this.localStore));
+            // 所有动态生成的环境变量
+            this.localStore[name] = value;
+            env.console.log(this.JSON.stringify(this.localStore))
+            this.environment.set("EncryptionHistory", this.JSON.stringify(this.localStore));
         }
 
         overrder(raw) {
