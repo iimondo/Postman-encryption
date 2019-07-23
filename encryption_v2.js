@@ -63,13 +63,23 @@
 
         constructor(name, splitter) {
             this.name = name;
-            this.localStore = {};
             this.splitter = splitter;
+
+            // pm 参数
+            this.JSON = env.JSON;
+            this.CryptoJS = env.CryptoJS;
+            this.environment = env.pm.environment;
+
+            // 内容存储至本地
+            this.localStore = {};
+            if (this.environment.has("localStore")) {
+                localStore = this.JSON.parse(this.environment.get("localStore"));
+            }
         }
 
         getEncryptedContent(raw) {
             let content = raw.split(this.name + this.splitter)[1];
-            let encryptedContent = env.pm.environment.get(content);
+            let encryptedContent = this.environment.get(content);
             encryptedContent = encryptedContent ? encryptedContent : content;
             return encryptedContent;
         }
@@ -82,7 +92,8 @@
         }
 
         save(name, value) {
-
+            localStore[name] = value;
+            this.environment.set("localStore", this.JSON.stringify(localStore));
         }
 
         overrder(raw) {
@@ -105,7 +116,7 @@
         }
 
         overrder(data) {
-            return CryptoJS.MD5(data).toString();
+            return this.CryptoJS.MD5(data).toString();
         }
     }
 
@@ -130,7 +141,7 @@
             if (!this.key) { throw new Error("没有在初始化配置中找到AES Key"); }
             if (!this.iv) { throw new Error("没有在初始化配置中找到AES iv"); }
 
-            return CryptoJS.AES.encrypt(data, this.key, {
+            return this.CryptoJS.AES.encrypt(data, this.key, {
                 iv: this.iv,
                 mode: CryptoJS.mode.CBC,
                 padding: CryptoJS.pad.Pkcs7
@@ -143,11 +154,11 @@
      * RSA加密
      */
     class RSA extends AbsEncrypt {
-        constructor(splitter, privateKey){
+        constructor(splitter, privateKey) {
             super('rsa', splitter);
         }
 
-        overrder(data){
+        overrder(data) {
 
         }
     }
@@ -186,6 +197,3 @@
     env.register = register;
     env.AbsEncrypt = AbsEncrypt;
 })(this);
-
-
-this.register({ log: true, splitter: "@" });
