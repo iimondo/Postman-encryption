@@ -26,7 +26,7 @@
 
             this.log(`raw data : ${rawData} , valid data : ${validData}`);
             this.log('------------ findValidData ------------');
-            return validData;
+            return validData.toString();
         }
 
         // FORM-DATA 参数转为对象返回
@@ -63,6 +63,7 @@
 
         constructor(name, splitter) {
             this.name = name;
+            // this.localStore = {};
             this.splitter = splitter;
 
             // pm 参数
@@ -71,10 +72,9 @@
             this.environment = env.pm.environment;
 
             // 内容存储至本地
-            this.localStore = {};
-            if (this.environment.has("localStore")) {
-                localStore = this.JSON.parse(this.environment.get("localStore"));
-            }
+            // if (this.environment.has("EncryptionHistory")) {
+            //     this.localStore = this.JSON.parse(this.environment.get("EncryptionHistory"));
+            // }
         }
 
         getEncryptedContent(raw) {
@@ -87,13 +87,18 @@
         encrypt(raw) {
             if (raw.indexOf(this.name + this.splitter) !== -1) {
                 let encryptValue = this.getEncryptedContent(raw);
-                this.save(raw, this.overrder(encryptValue));
+                this.save(raw, this.overrder(encryptValue).toLocaleUpperCase());
             }
         }
 
         save(name, value) {
-            localStore[name] = value;
-            this.environment.set("localStore", this.JSON.stringify(localStore));
+            // 当前记录
+            this.environment.set(name, value);
+
+            // 所有记录
+            // this.localStore[name] = value;
+            // env.console.log(this.JSON.stringify(this.localStore))
+            // this.environment.set("EncryptionHistory", this.JSON.stringify(this.localStore));
         }
 
         overrder(raw) {
@@ -143,9 +148,9 @@
 
             return this.CryptoJS.AES.encrypt(data, this.key, {
                 iv: this.iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
+                mode: this.CryptoJS.mode.CBC,
+                padding: this.CryptoJS.pad.Pkcs7
+            }).toString();
         }
     }
 
@@ -197,3 +202,12 @@
     env.register = register;
     env.AbsEncrypt = AbsEncrypt;
 })(this);
+
+
+// 注册
+this.register({
+    log: true,
+    splitter: "@",
+    key: 'Y5MU^OM7BUWI&BQR',
+    iv: 'S4^AX&PFRFVJL73Z'
+});
