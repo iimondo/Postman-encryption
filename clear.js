@@ -1,9 +1,9 @@
 (function clera(){
-    if(!pm.environment.has('localStore')){
-        pm.environment.set('localStore', '{}');
+    if(!pm.environment.has('EncryptionHistory')){
+        pm.environment.set('EncryptionHistory', '{}');
     }
 
-    let localStore = JSON.parse(pm.environment.get('localStore'));
+    let localStore = JSON.parse(pm.environment.get('EncryptionHistory'));
     Object.keys(localStore).map(key => pm.environment.unset(key));
-    pm.environment.unset('localStore');
+    pm.environment.unset('EncryptionHistory');
 })();

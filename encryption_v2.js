@@ -63,18 +63,12 @@
 
         constructor(name, splitter) {
             this.name = name;
-            this.localStore = {};
             this.splitter = splitter;
 
             // pm 参数
             this.JSON = env.JSON;
             this.CryptoJS = env.CryptoJS;
             this.environment = env.pm.environment;
-
-            // 记录动态生成的环境变量
-            if (this.environment.has("EncryptionHistory")) {
-                this.localStore = this.JSON.parse(this.environment.get("EncryptionHistory"));
-            }
         }
 
         getEncryptedContent(raw) {
@@ -84,10 +78,10 @@
             return encryptedContent;
         }
 
-        _encrypt(raw) {
+        encrypt(raw) {
             if (raw.indexOf(this.name + this.splitter) !== -1) {
                 let encryptValue = this.getEncryptedContent(raw);
-                this.save(raw, this.overrder(encryptValue, raw).toLocaleUpperCase());
+                this._save(raw, this.overrder(encryptValue, raw).toLocaleUpperCase());
             }
         }
 
@@ -96,9 +90,12 @@
             this.environment.set(name, value);
 
             // 所有动态生成的环境变量
-            this.localStore[name] = value;
-            env.console.log(this.JSON.stringify(this.localStore))
-            this.environment.set("EncryptionHistory", this.JSON.stringify(this.localStore));
+            let encryptionHistory = {};
+            if (this.environment.has("EncryptionHistory")) {
+                encryptionHistory = this.JSON.parse(this.environment.get("EncryptionHistory"));
+            }
+            encryptionHistory[name] = value;
+            this.environment.set("EncryptionHistory", this.JSON.stringify(encryptionHistory));
         }
 
         /**
@@ -167,10 +164,6 @@
         constructor(splitter, privateKey) {
             super('rsa', splitter);
         }
-
-        overrder(data) {
-
-        }
     }
 
 
@@ -207,12 +200,3 @@
     env.register = register;
     env.AbsEncrypt = AbsEncrypt;
 })(this);
-
-
-// 注册
-this.register({
-    log: true,
-    splitter: "@",
-    key: 'Y5MU^OM7BUWI&BQR',
-    iv: 'S4^AX&PFRFVJL73Z'
-});
