@@ -14,8 +14,8 @@ Postman加密Pre-request Script
 <img src="images/aes.png" />
 </div>
 
-# 添加脚本
-## 1. 在Collections的Pre-request script添加
+# 使用
+### 1. 在Collections的Pre-request script添加
 ```
 // ------ 导入加密脚本 ------
 if(!pm.environment.has("encryption.js")){
@@ -40,7 +40,7 @@ this.register({
 <img src="images/pre-request-script.png" />
 </div>
 
-## 2. 在Collections的Tests中添加清除记录脚本
+### 2. 在Collections的Tests中添加清除记录脚本
 ```
 if(!pm.environment.has("clearTrace.js")){
     pm.sendRequest("https://raw.githubusercontent.com/iimondo/Postman-encryption/master/encryp/clearTrace.js", (err, res) => {
@@ -53,7 +53,7 @@ eval(pm.environment.get("clearTrace.js"));
 ```
 Tests中的脚本是用来清除动态生成的环境变量，如果你想保留，可以不添加此脚本
 
-## 3. 注意事项
+### 3. 注意事项
 - RSA公钥添加时必须首尾加上特殊字符，如下:<br>'-----BEGIN PUBLIC KEY-----\n' + pub_key + '-----END PUBLIC KEY-----'<br>
 一般用户在登录后返回rsa的公钥，我们可以在登录接口的tests添加如下脚本：
 ```
@@ -67,9 +67,42 @@ if(body.code === 200){
 当然如果你的公钥是存放在本地，则可以直接写死在环境变量中
 - 加密使用的是[forge Project](https://github.com/digitalbazaar/forge)
 
-## 配置参数说明
+# 配置参数说明
 - key: AES的Key
 - iv: AES的iv,即偏移量
 - splitter: 分割符，区别加密模式和加密内容, 默认值 '@'
 - privateKey: RSA私钥
 - log: 是否开户日志
+
+# 自定义自己的加密方式
+继承AbsEncrypt， 重写overrder，然后返回你加密的结果
+```
+// 自定义加密方式
+class DIY extends this.AbsEncrypt{
+    constructor(splitter) {
+        super('diy', splitter);
+        this.timestamp;
+    }
+    
+    overrder(data, raw){
+        if(data === 'timestamp'){ // 获取时间
+            this.timestamp = new Date().getTime();
+            return this.timestamp.toString();
+
+        } else if(data === 'merge'){ // 合并此前加密结果
+            return env.CryptoJS.MD5(`iMlVF693Gz6eb7z1gzaccess_keyqDD09E51C16uoeIWtimespan${this.timestamp}iMlVF693Gz6eb7z1gz`).toString().toLocaleUpperCase();
+        }
+
+        return '';
+    }
+}
+
+
+// 注册配置
+this.register({
+    log: false, 
+    splitter: "@", 
+    key: 'Y5MU^OM7BUWI&BQR',
+    iv: 'S4^AX&PFRFVJL73Z'
+}, [new DIY('@')]);
+```
