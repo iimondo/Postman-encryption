@@ -1,5 +1,3 @@
-> 没有开放AES和RSA模式的接口, 如果你有需要或其他建议可以联系本人, QQ:1428728432
-
 # Postman-encryption
 Postman加密Pre-request Script
 
