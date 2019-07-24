@@ -91,11 +91,11 @@
 
             // 所有动态生成的环境变量
             let encryptionHistory = {};
-            if (this.environment.has("EncryptionHistory")) {
-                encryptionHistory = this.JSON.parse(this.environment.get("EncryptionHistory"));
+            if (this.environment.has("HistoryTrace")) {
+                encryptionHistory = this.JSON.parse(this.environment.get("HistoryTrace"));
             }
             encryptionHistory[name] = value;
-            this.environment.set("EncryptionHistory", this.JSON.stringify(encryptionHistory));
+            this.environment.set("HistoryTrace", this.JSON.stringify(encryptionHistory));
         }
 
         /**
@@ -148,8 +148,8 @@
             if (!this.key) { throw new Error("没有在初始化配置中找到AES Key"); }
             if (!this.iv) { throw new Error("没有在初始化配置中找到AES iv"); }
 
-            return this.CryptoJS.AES.encrypt(data, this.key, {
-                iv: this.iv,
+            return this.CryptoJS.AES.encrypt(data, this.CryptoJS.enc.Utf8.parse(this.key), {
+                iv: this.CryptoJS.enc.Utf8.parse(this.iv),
                 mode: this.CryptoJS.mode.CBC,
                 padding: this.CryptoJS.pad.Pkcs7
             }).toString();
