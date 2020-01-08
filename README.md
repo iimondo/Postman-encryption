@@ -19,7 +19,7 @@ Postman加密Pre-request Script
 ```
 // ------ 导入加密脚本 ------
 if(!pm.environment.has("encryption.js")){
-    pm.sendRequest("https://raw.githubusercontent.com/iimondo/Postman-encryption/master/encryp/encryption_v2.js", (err, res) => {
+    pm.sendRequest("https://gitee.com/time895/Postman-encryption/raw/master/encryption.js", (err, res) => {
     if (!err) {
         pm.environment.set("encryption.js", res.text());
     }
