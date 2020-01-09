@@ -17,23 +17,30 @@ Postman加密Pre-request Script
 # 使用
 ### 1. 在Collections的Pre-request script添加
 ```
+const load = () => {
+    eval(pm.environment.get("encryption.js"));
+
+    // 初始化配置
+    this.register({
+        log: false, 
+        splitter: "@", 
+        key: 'Y5MU^OM7BUWI&BQR',
+        iv: 'S4^AX&PFRFVJL73Z'
+    });
+}
+
 // ------ 导入加密脚本 ------
 if(!pm.environment.has("encryption.js")){
     pm.sendRequest("https://gitee.com/time895/Postman-encryption/raw/master/encryption.js", (err, res) => {
+    
     if (!err) {
         pm.environment.set("encryption.js", res.text());
+        load();
     }
-})}
-
-eval(pm.environment.get("encryption.js"));
-
-// 初始化配置
-this.register({
-    log: false, 
-    splitter: "@", 
-    key: 'Y5MU^OM7BUWI&BQR',
-    iv: 'S4^AX&PFRFVJL73Z'
-});
+    
+})} else {
+    load();
+}
 ```
 如下图：
 <div align=center>
