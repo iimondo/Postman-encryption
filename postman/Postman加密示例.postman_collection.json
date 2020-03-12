@@ -1,0 +1,135 @@
+{
+	"info": {
+		"_postman_id": "75f3e750-fbf5-49e5-baba-dc4754fee5da",
+		"name": "Postman加密示例",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "md5加密示例",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://gank.io/api/today?key1={{md5@1234}}&key2={{md5@mobile}}",
+					"protocol": "http",
+					"host": [
+						"gank",
+						"io"
+					],
+					"path": [
+						"api",
+						"today"
+					],
+					"query": [
+						{
+							"key": "key1",
+							"value": "{{md5@1234}}",
+							"description": "md5加密，加密内容为1234"
+						},
+						{
+							"key": "key2",
+							"value": "{{md5@mobile}}",
+							"description": "md5加密，加密内容为变量mobile中的内容"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AES加密示例",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://gank.io/api/xiandu/categories?key1={{aes@mobile}}&key2={{aes@1234}}",
+					"protocol": "http",
+					"host": [
+						"gank",
+						"io"
+					],
+					"path": [
+						"api",
+						"xiandu",
+						"categories"
+					],
+					"query": [
+						{
+							"key": "key1",
+							"value": "{{aes@mobile}}",
+							"description": "与Md5使用相同，加密方式为aes"
+						},
+						{
+							"key": "key2",
+							"value": "{{aes@1234}}",
+							"description": "同md5"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c7f91c32-06f7-4161-bd07-42be80b81a4f",
+				"type": "text/javascript",
+				"exec": [
+					"const load = () => {",
+					"    eval(pm.environment.get(\"encryption.js\"));",
+					"",
+					"    // 初始化配置",
+					"    this.register({",
+					"        log: false, ",
+					"        splitter: \"@\", ",
+					"        key: 'Y5MU^OM7BUWI&BQR', // AES key",
+					"        iv: 'S4^AX&PFRFVJL73Z' // AES 偏移量",
+					"    });",
+					"}",
+					"",
+					"// ------ 导入加密脚本 ------",
+					"if(!pm.environment.has(\"encryption.js\")){",
+					"    pm.sendRequest(\"https://gitee.com/time895/Postman-encryption/raw/master/encryption.js\", (err, res) => {",
+					"    ",
+					"    if (!err) {",
+					"        pm.environment.set(\"encryption.js\", res.text());",
+					"        load();",
+					"    }",
+					"    ",
+					"})} else {",
+					"    load();",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "97e5fc9a-6e60-41eb-9632-01ac3e012981",
+				"type": "text/javascript",
+				"exec": [
+					"(function clera(){",
+					"    if(!pm.environment.has('HistoryTrace')){",
+					"        pm.environment.set('HistoryTrace', '{}');",
+					"    }",
+					"",
+					"    let localStore = JSON.parse(pm.environment.get('HistoryTrace'));",
+					"    Object.keys(localStore).map(key => pm.environment.unset(key));",
+					"    pm.environment.unset('HistoryTrace');",
+					"})();"
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
