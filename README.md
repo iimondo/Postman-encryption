@@ -13,6 +13,15 @@ Postman加密请求参数，支持AES, MD5，RSA...可自定加密方式.
 </div>
 
 # 原理
-Postman支持在Pre-request Script和Tests中编写Js脚本，并且内置了一些方法比如可以通过
-```pm.environment.get(mobile)```来获取当前环境下mobile变量的内容，
-而```pm.environment.set(key,value)```方法则可以动态变量的名称及内容.
+Postman支持在**Pre-request Script**和**Tests**中编写Js脚本，并且内置了一些方法比如可以用 
+```pm.environment.get(mobile)```方法来获取当前环境下mobile变量的内容，
+```pm.environment.set(key,value)```方法则动态添加变量的名称及内容...详情[教程](https://learning.postman.com/docs/postman/scripts/test-scripts/)请查看官网.
+
+在Postman内置的方法中，有些可以获取当前请求信息(请求方式、请求头、请求体...)，但它并不支持修改请求信息，比如我们无法把POST请求中的mobile参数修改为加密后的结果，一句话**Postman只支持读不支持写**.
+
+那我们如何进行加密呢？我的想法是**将加密结果设置在环境变量中**，用Postman提交请求时如果我们的参数为变量，通过脚本获取到的参数则是变量的名称，比如在POST请求其中参数```{{mobile}}```为变量，那我们通过脚本获所取的请求参数为{{mobile}}字符串，我们通过```get```方法获取mobile变量的原始内容将其加密，然后将其替换为加密的结果，这样我们在请求的时候mobile变量是加密后的内容了.
+
+上面用MD5加密的例子中，我们通过@符号分隔加密方式和加密内容，加密内容支持变量和非变量，在请求的过程中，会获取右边待加密的值，然后将其加密并设置到这个变量中，在Postman中如果请求参数用{{}}符号包裹，其内部会自动从当前或全局变量中查找其对应的值，在上述例子中我们动态创建{{md5@1234}}这个变量，并将加密好的内容设置到了这个变量中，所以在请求时，Postman查找的变量就成了加密后结果.
+
+# 实现RSA加密原理
+虽然我们的AES和MD5加密是用Postman中内置的CryptoJS库进行的，但这个库有一个缺点，就是不支持RSA加，那如何解决RSA加密的问题呢？
