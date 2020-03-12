@@ -25,3 +25,20 @@ Postman支持在**Pre-request Script**和**Tests**中编写Js脚本，并且内�
 
 # 实现RSA加密原理
 虽然我们的AES和MD5加密是用Postman中内置的CryptoJS库进行的，但这个库有一个缺点，就是不支持RSA加，那如何解决RSA加密的问题呢？
+
+要实现RSA加密需要用到两个关键的方法```pm.sendRequest```和```eval```, 通过```pm.sendRequest```获取返回的脚本字符串然后再用```eval```执行这个脚本，这样在Postman的环境中就会存在该脚本了，这里我用的是[forge.js](https://github.com/digitalbazaar/forge)进行RSA加密.
+
+```javascript
+if (!pm.globals.has("forgeJS")) {
+  pm.sendRequest(
+    "https://raw.githubusercontent.com/iimondo/Postman-encryption/master/forge.js",
+    (err, res) => {
+        if (!err) {
+            pm.globals.set("forgeJS", res.text());
+        }
+    }
+  );
+}
+
+eval(postman.getGlobalVariable("forgeJS"));
+```
