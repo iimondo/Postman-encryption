@@ -9,7 +9,8 @@ Postman加密请求参数，支持AES, MD5，RSA...可自定加密方式.
 
 以下是用MD5加密的示例
 <div align=center>
-<img src="images/console.png" />
+<img src="https://gitee.com/aletto/Postman-encryption/raw/master/console.png" />
+<!-- <img src="images/console.png" /> -->
 </div>
 
 # 原理
