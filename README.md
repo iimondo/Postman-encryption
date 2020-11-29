@@ -1,6 +1,5 @@
 # Postman-encryption
 Postman加密请求参数，支持AES, MD5，RSA...可自定加密方式.
-> 微信号：onepiece2019
 
 # 例子
 下载本项目postman文件下的两个json文件, 分别为collections和环境变量，将其导入到Postman.
