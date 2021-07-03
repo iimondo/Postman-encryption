@@ -31,7 +31,7 @@ Postman支持在**Pre-request Script**和**Tests**中编写Js脚本，并且内�
 ```javascript
 if (!pm.globals.has("forgeJS")) {
   pm.sendRequest(
-    "https://gitee.com/time895/Postman-encryption/raw/master/encryption.js",
+    "https://gitee.com/Aletto/Postman-encryption/raw/master/forge.js",
     (err, res) => {
         if (!err) {
             pm.globals.set("forgeJS", res.text());
